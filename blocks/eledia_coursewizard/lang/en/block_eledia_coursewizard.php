@@ -20,10 +20,10 @@
  * @package eledia_coursewizard
  */
 
-$string['pluginname'] = 'eLeDia coursewizard';
+$string['pluginname'] = 'coursewizard';
 $string['coursewizard_desc'] = 'Here you can edit the e-mail, which a new created user will get.';
 $string['createuser_head'] = 'Create user';
-$string['createuser_button'] = 'finish';
+$string['createuser_button'] = 'Finish';
 $string['createuser_desc'] = 'You can create user and automatically enrol them into your new course.<br>
                               They will get an e-mail with login data.';
 $string['emailuser'] = 'E-mail addresses of new users:<br>(separated by comma)';
