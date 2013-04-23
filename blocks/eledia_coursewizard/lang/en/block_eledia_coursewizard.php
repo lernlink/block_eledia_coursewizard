@@ -20,15 +20,15 @@
  * @package eledia_coursewizard
  */
 
-$string['pluginname'] = 'coursewizard';
 $string['coursewizard_desc'] = 'Here you can edit the e-mail, which a new created user will get.';
-$string['createuser_head'] = 'Create user';
+$string['coursewizard_mailcontent'] = 'Someone has created a new Moodle account for you.';
+$string['coursewizard_mailcontent_desc'] = 'Content of e-mail to new user';
+$string['coursewizard_mailsubject'] = 'Your new Moodle account';
+$string['coursewizard_mailsubject_desc'] = 'Subject of e-mail to new user';
 $string['createuser_button'] = 'Finish';
 $string['createuser_desc'] = 'You can create user and automatically enrol them into your new course.<br>
                               They will get an e-mail with login data.';
-$string['emailuser'] = 'E-mail addresses of new users:<br>(separated by comma)';
-$string['coursewizard_mailsubject_desc'] = 'Subject of e-mail to new user';
-$string['coursewizard_mailcontent_desc'] = 'Content of e-mail to new user';
-$string['coursewizard_mailsubject'] = 'Your new Moodle account';
-$string['coursewizard_mailcontent'] = 'Someone has created a new Moodle account for you.';
+$string['createuser_head'] = 'Create user';
 $string['eledia_coursewizard:addinstance'] = 'Add new eLeDia coursewizard block';
+$string['emailuser'] = 'E-mail addresses of new users:<br>(separated by comma)';
+$string['pluginname'] = 'coursewizard';
