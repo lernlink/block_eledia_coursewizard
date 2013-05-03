@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author Matthias Schwabe <matthias.schwabe@eledia.de>
+ * @author Matthias Schwabe <support@eledia.de>
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package eledia_coursewizard
  */
@@ -31,4 +31,11 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_confightmleditor('block_eledia_coursewizard/mailcontent',
                    get_string('coursewizard_mailcontent_desc', 'block_eledia_coursewizard'), '',
                    get_string('coursewizard_mailcontent', 'block_eledia_coursewizard'), PARAM_RAW, 60, 10));
+
+    $settings->add(new admin_setting_configtext('block_eledia_coursewizard/mailsubject_notnew',
+                   get_string('coursewizard_mailsubject_notnew_desc', 'block_eledia_coursewizard'), '',
+                   get_string('coursewizard_mailsubject_notnew', 'block_eledia_coursewizard'), PARAM_TEXT, 50));
+    $settings->add(new admin_setting_confightmleditor('block_eledia_coursewizard/mailcontent_notnew',
+                   get_string('coursewizard_mailcontent_notnew_desc', 'block_eledia_coursewizard'), '',
+                   get_string('coursewizard_mailcontent_notnew', 'block_eledia_coursewizard'), PARAM_RAW, 60, 10));
 }

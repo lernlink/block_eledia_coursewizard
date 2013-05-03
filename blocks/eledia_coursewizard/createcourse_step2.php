@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author Matthias Schwabe <matthias.schwabe@eledia.de>
+ * @author Matthias Schwabe <support@eledia.de>
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package eledia_coursewizard
  */
@@ -66,38 +66,50 @@ if ($data = $editform->get_data()) {
 
         foreach ($usernames as $username) {
 
-            $passhash = md5($username.time());
-            $password = substr($passhash, 0, 12);
+            $uname = $DB->get_record('user', array('username'=>$username));
 
-// -------- Create new user.
-            $newuser = create_user_record($username, $password, 'email');
-            $newuser->email = $username;
-            $newuser->emailstop = 0;
-            $newuser->maildisplay = 2;
-            $newuser->policyagreed = 0;
-            // $newuser->confirm = 1;
+            if (empty($uname)) {  // New user => create, enrol and mail.
 
-            $DB->update_record('user', $newuser);
-            set_user_preference('auth_forcepasswordchange', 1, $newuser->id);
+                $passhash = md5($username.time());
+                $password = substr($passhash, 0, 12);
 
-            // Enrol into new course.
-            enrol_try_internal_enrol($cid, $newuser->id, 5);
+// ------------ Create new user.
+                $newuser = create_user_record($username, $password, 'email');
+                $newuser->email = $username;
+                $newuser->emailstop = 0;
+                $newuser->maildisplay = 2;
+                $newuser->policyagreed = 0;
+             // $newuser->confirm = 1;
 
-// -------- E-Mail to new user.
-            $contact = get_admin();
+                $DB->update_record('user', $newuser);
+                set_user_preference('auth_forcepasswordchange', 1, $newuser->id);
 
-            $mailuser = new stdClass(); // Dummy user because email_to_user needs a user.
-            $mailuser->firstname = null;
-            $mailuser->lastname = null;
-            $mailuser->email = $username;
-            $mailuser->id = 0; // To prevent anything annoying happening.
+                enrol_try_internal_enrol($cid, $newuser->id, 5);  // Enrol into new course.
 
-            $content = $mailparams['mailcontent']->value."\n\n";
-            $content .= "Moodle-URL: ".$CFG->wwwroot."\n";
-            $content .= "Your username: ".$username."\n";
-            $content .= "Your password: ".$password;
+// ------------ E-Mail to new user.
+                $contact = get_admin();
 
-            email_to_user($mailuser, $contact, $mailparams['mailsubject']->value, $content);
+                $mailuser = new stdClass();  // Dummy user because email_to_user needs a user.
+                $mailuser->firstname = null;
+                $mailuser->lastname = null;
+                $mailuser->email = $username;
+                $mailuser->id = 0;  // To prevent anything annoying happening.
+
+                $content = $mailparams['mailcontent']->value."\n\n";
+                $content .= "Moodle-URL: ".$CFG->wwwroot."\n";
+                $content .= "Your username: ".$username."\n";
+                $content .= "Your password: ".$password;
+
+                email_to_user($mailuser, $contact, $mailparams['mailsubject']->value, strip_tags($content), $content);
+
+            } else {  // Existing user => enrol and mail.
+
+                enrol_try_internal_enrol($cid, $uname->id, 5);  // Enrol into new course.
+
+                $content = $mailparams['mailcontent_notnew']->value."\n\n";
+                $content .= "Moodle-URL: ".$CFG->wwwroot."\n";
+                email_to_user($uname, $contact, $mailparams['mailsubject_notnew']->value, strip_tags($content), $content);              
+            }   
         }
     }
     $url = $CFG->wwwroot."/course/view.php?id=".$cid;
