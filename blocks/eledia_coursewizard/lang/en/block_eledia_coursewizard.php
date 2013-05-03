@@ -23,8 +23,12 @@
 $string['coursewizard_desc'] = 'Here you can edit the e-mail, which a new created user will get.';
 $string['coursewizard_mailcontent'] = 'Someone has created a new Moodle account for you.';
 $string['coursewizard_mailcontent_desc'] = 'Content of e-mail to new user';
+$string['coursewizard_mailcontent_notnew'] = 'Someone has enrolled yout into a new Moodle course.';
+$string['coursewizard_mailcontent_notnew_desc'] = 'Content of e-mail to existing user';
 $string['coursewizard_mailsubject'] = 'Your new Moodle account';
 $string['coursewizard_mailsubject_desc'] = 'Subject of e-mail to new user';
+$string['coursewizard_mailsubject_notnew'] = 'New course at Moodle';
+$string['coursewizard_mailsubject_notnew_desc'] = 'Subject of e-mail to existing user';
 $string['createuser_button'] = 'Finish';
 $string['createuser_desc'] = 'You can create user and automatically enrol them into your new course.<br>
                               They will get an e-mail with login data.';
