@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author Matthias Schwabe <matthias.schwabe@eledia.de>
+ * @author Matthias Schwabe <support@eledia.de>
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package eledia_coursewizard
  */
@@ -28,6 +28,7 @@ require_once($CFG->libdir . '/blocklib.php');
 error_reporting(E_ALL);
 
 $id         = optional_param('id', 0, PARAM_INT);  // Course id.
+$cid        = required_param('cid', PARAM_INT);  // Origin course id.
 $categoryid = optional_param('category', 0, PARAM_INT);  // Course category - can be changed in edit form.
 $returnto   = optional_param('returnto', 0, PARAM_ALPHANUM);  // Generic navigation return page switch.
 
@@ -44,7 +45,8 @@ $categoryid = 1;
 require_login();
 $category = $DB->get_record('course_categories', array('id'=>$categoryid), '*', MUST_EXIST);
 $catcontext = context_coursecat::instance($category->id);
-require_capability('moodle/course:create', $catcontext);
+$cwcontext = context_course::instance($cid);
+require_capability('block/eledia_coursewizard:create_user', $cwcontext);
 $PAGE->set_context($catcontext);
 
 // Prepare course and the editor.
@@ -56,7 +58,7 @@ $course = file_prepare_standard_editor($course, 'summary', $editoroptions, null,
 
 // First create the form.
 $editform = new eledia_course_edit_form(null, array('course'=>$course, 'category'=>$category,
-                                                    'editoroptions'=>$editoroptions, 'returnto'=>$returnto));
+                                                    'editoroptions'=>$editoroptions, 'returnto'=>$returnto, 'cid'=>$cid));
 if ($editform->is_cancelled()) {
     switch ($returnto) {
         case 'category':
@@ -96,7 +98,7 @@ if ($editform->is_cancelled()) {
             if ($plugin = enrol_get_plugin($instance->enrol)) {
                 if ($plugin->get_manual_enrol_link($instance)) {
                     // We know that the ajax enrol UI will have an option to enrol.
-                    redirect(new moodle_url('/blocks/eledia_coursewizard/createcourse_step2.php', array('id'=>$course->id)));
+                    redirect(new moodle_url('/blocks/eledia_coursewizard/createcourse_step2.php', array('id'=>$course->id, 'cid'=>$cid)));
                 }
             }
         }
@@ -108,7 +110,7 @@ if ($editform->is_cancelled()) {
             $url = new moodle_url($CFG->wwwroot.'/course/category.php', array('id'=>$categoryid));
             break;
         default:
-            $url = new moodle_url($CFG->wwwroot.'/course/view.php', array('id'=>$course->id));
+            $url = new moodle_url('/blocks/eledia_coursewizard/createcourse_step2.php', array('id'=>$course->id, 'cid'=>$cid));
             break;
     }
     redirect($url);

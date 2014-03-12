@@ -23,29 +23,29 @@
 require_once('../../config.php');
 require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/blocks/eledia_coursewizard/createcourse_form.php');
-require_once(dirname(__FILE__) . '/createcourse_step2_form.php');
+require_once(dirname(__FILE__) . '/adduser_form.php');
 
 error_reporting(E_ALL);
 
 $id  = optional_param('id', 0, PARAM_INT);  // Course id.
-$cid = required_param('cid', PARAM_INT);  // Origin course id.
 $pageparams = array('id'=>$id);
-$PAGE->set_url('/blocks/eledia_coursewizard/createcourse2.php', $pageparams);
+$PAGE->set_url('/blocks/eledia_coursewizard/adduser.php', $pageparams);
 
 global $CFG, $DB, $PAGE, $COURSE;
 
 require_login();
-$context = context_course::instance($cid);
+$context = context_course::instance($id);
 require_capability('block/eledia_coursewizard:create_user', $context);
 $PAGE->set_context($context);
 $user = new StdClass();
+
 $editform = new coursewizard_enrol_users_form(null, array('user'=>$user));
 
 if ($data = $editform->get_data()) {
     $cid = $data->id;
-    
+
     if($data->email != '') {
-    
+
         $mailparams = $DB->get_records_sql("SELECT name, value
                                             FROM {config_plugins}
                                             WHERE plugin='block_eledia_coursewizard'");
@@ -55,7 +55,7 @@ if ($data = $editform->get_data()) {
         $usernames = str_replace("\r", " ", $usernames);
         $usernames = str_replace(" ", "", $usernames);
         $usernames = explode(",", $usernames);
-        
+
         $invalidemails = Array();  // Array for invalid e-mail addresses.
 
         foreach ($usernames as $username) {

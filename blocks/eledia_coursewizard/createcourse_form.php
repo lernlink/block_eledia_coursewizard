@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author Matthias Schwabe <matthias.schwabe@eledia.de>
+ * @author Matthias Schwabe <support@eledia.de>
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package eledia_coursewizard
  */
@@ -24,6 +24,7 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->libdir.'/completionlib.php');
+require_once($CFG->libdir.'/coursecatlib.php');
 
 class eledia_course_edit_form extends moodleform {
     protected $course;
@@ -39,7 +40,8 @@ class eledia_course_edit_form extends moodleform {
         $course        = $this->_customdata['course']; // This contains the data of this form.
         $category      = $this->_customdata['category'];
         $editoroptions = $this->_customdata['editoroptions'];
-        $returnto = $this->_customdata['returnto'];
+        $returnto      = $this->_customdata['returnto'];
+        $cid           = $this->_customdata['cid'];
 
         $systemcontext   = context_system::instance();
         $categorycontext = context_coursecat::instance($category->id);
@@ -62,15 +64,17 @@ class eledia_course_edit_form extends moodleform {
         $mform->addElement('hidden', 'returnto', null);
         $mform->setType('returnto', PARAM_ALPHANUM);
         $mform->setConstant('returnto', $returnto);
+        
+        $mform->addElement('hidden', 'cid', null);
+        $mform->setType('cid', PARAM_INT);
+        $mform->setConstant('cid', $cid);
 
         // Verify permissions to change course category or keep current.
         if (empty($course->id)) {
             if (has_capability('moodle/course:create', $categorycontext)) {
-                $displaylist = array();
-                $parentlist = array();
-                make_categories_list($displaylist, $parentlist, 'moodle/course:create');
-                $mform->addElement('select', 'category', get_string('category'), $displaylist);
-                $mform->addHelpButton('category', 'category');
+                $displaylist = coursecat::make_categories_list('moodle/course:create');
+                $mform->addElement('select', 'category', get_string('coursecategory'), $displaylist);
+                $mform->addHelpButton('category', 'coursecategory');
                 $mform->setDefault('category', $category->id);
             } else {
                 $mform->addElement('hidden', 'category', null);
@@ -79,18 +83,15 @@ class eledia_course_edit_form extends moodleform {
             }
         } else {
             if (has_capability('moodle/course:changecategory', $coursecontext)) {
-                $displaylist = array();
-                $parentlist = array();
-                make_categories_list($displaylist, $parentlist, 'moodle/course:create');
+                $displaylist = coursecat::make_categories_list('moodle/course:create');
                 if (!isset($displaylist[$course->category])) {
-                    // Always keep current.
-                    $displaylist[$course->category] = format_string($DB->get_field('course_categories', 'name',
-                                                                                    array('id'=>$course->category)));
+                    //always keep current
+                    $displaylist[$course->category] = coursecat::get($course->category, MUST_EXIST, true)->get_formatted_name();
                 }
-                $mform->addElement('select', 'category', get_string('category'), $displaylist);
-                $mform->addHelpButton('category', 'category');
+                $mform->addElement('select', 'category', get_string('coursecategory'), $displaylist);
+                $mform->addHelpButton('category', 'coursecategory');
             } else {
-                // Keep current.
+                //keep current
                 $mform->addElement('hidden', 'category', null);
                 $mform->setType('category', PARAM_INT);
                 $mform->setConstant('category', $course->category);

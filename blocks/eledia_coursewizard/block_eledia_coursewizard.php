@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author Matthias Schwabe <matthias.schwabe@eledia.de>
+ * @author Matthias Schwabe <support@eledia.de>
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package eledia_coursewizard
  */
@@ -29,16 +29,25 @@ class block_eledia_coursewizard extends block_base {
     public function get_content() {
         global $CFG, $DB, $COURSE;
 
-        if (has_capability('moodle/course:create', $this->context)) {
+        $this->content = new stdClass;
+        $this->content->footer = '';
+        $this->content->text = '';
 
-            $this->content = new stdClass;
-            $this->content->footer = '';
-            $this->content->text  = '<div class="eledia_coursewizard">';
-            $this->content->text .= "<a href=\"".$CFG->wwwroot."/blocks/eledia_coursewizard/createcourse.php\">Create a course</a>";
+        if (has_capability('block/eledia_coursewizard:create_course', $this->context) and has_capability('block/eledia_coursewizard:create_user', $this->context)) {
+
+            $this->content->text .= '<div class="eledia_coursewizard_createcourse">';
+            $this->content->text .= "<a href=\"".$CFG->wwwroot."/blocks/eledia_coursewizard/createcourse.php?cid=".$COURSE->id."\">".get_string('createcourse', 'block_eledia_coursewizard')."</a>";
             $this->content->text .= '</div>';
-
-            return $this->content;
         }
+        
+        if (has_capability('block/eledia_coursewizard:create_user', $this->context)) {
+
+            $this->content->text .= '<div class="eledia_coursewizard_adduser">';
+            $this->content->text .= "<a href=\"".$CFG->wwwroot."/blocks/eledia_coursewizard/adduser.php?id=".$COURSE->id."\">".get_string('addusers', 'block_eledia_coursewizard')."</a>";
+            $this->content->text .= '</div>';
+        }
+        
+        return $this->content;
     }
 
     public function applicable_formats() {

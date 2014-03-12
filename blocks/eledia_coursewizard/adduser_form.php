@@ -30,15 +30,14 @@ class coursewizard_enrol_users_form extends moodleform {
     function definition() {
 
         global $USER, $CFG, $DB, $PAGE;
-        $cid  = optional_param('id', 0, PARAM_INT);  // Course id.
-        $ocid = required_param('cid', PARAM_INT);  // Origin course id.
+        $cid = optional_param('id', 0, PARAM_INT);  // Course id.
 
         $mform =& $this->_form;
         $user = $this->_customdata['user'];
         $this->user = $user;
 
-        $mform->addElement('header', 'general', get_string('createuser_head', 'block_eledia_coursewizard'));
-        $mform->addElement('static', 'description', '', get_string('createuser_desc', 'block_eledia_coursewizard'));
+        $mform->addElement('header', 'general', get_string('addusers_head', 'block_eledia_coursewizard'));
+        $mform->addElement('static', 'description', '', get_string('addusers_desc', 'block_eledia_coursewizard'));
         $mform->addElement('textarea', 'email', get_string('emailuser', 'block_eledia_coursewizard'),
                            'wrap="virtual", rows="10" cols="100"');
 
@@ -46,15 +45,11 @@ class coursewizard_enrol_users_form extends moodleform {
 
         $mform->addElement('hidden', 'id', $cid);
         $mform->setType('id', PARAM_INT);
-        
-        $mform->addElement('hidden', 'cid', null);
-        $mform->setType('cid', PARAM_INT);
-        $mform->setConstant('cid', $ocid);
 
-        $this->add_action_buttons(false, get_string('createuser_button', 'block_eledia_coursewizard'));
+        $this->add_action_buttons(false, get_string('addusers_button', 'block_eledia_coursewizard'));
 
         $mform->addElement('static', 'backbutton', '', '<br><a href='.$CFG->wwwroot.'/course/view.php?id='.$cid.'>'
-        .get_string('backbutton_create2', 'block_eledia_coursewizard').'</a>');
+        .get_string('backbutton_cancel', 'block_eledia_coursewizard').'</a>');
 
         $this->set_data($user);
     }
