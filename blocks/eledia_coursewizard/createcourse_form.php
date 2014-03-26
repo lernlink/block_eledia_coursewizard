@@ -31,121 +31,97 @@ class eledia_course_edit_form extends moodleform {
     protected $context;
 
     function definition() {
-        global $USER, $CFG, $DB, $PAGE;
+        global $CFG, $DB, $PAGE;
 
         $mform = $this->_form;
         $PAGE->requires->yui_module('moodle-course-formatchooser', 'M.course.init_formatchooser',
                array(array('formid' => $mform->getAttribute('id'))));
 
-        $course        = $this->_customdata['course']; // This contains the data of this form.
-        $category      = $this->_customdata['category'];
         $editoroptions = $this->_customdata['editoroptions'];
         $returnto      = $this->_customdata['returnto'];
         $cid           = $this->_customdata['cid'];
 
+		$course = $DB->get_record('course', array('id' => $cid), 'id, category');
+		if ($course) { // Should always exist, but just in case.
+			$categoryid = $course->category;
+		}
+
         $systemcontext   = context_system::instance();
-        $categorycontext = context_coursecat::instance($category->id);
+        $categorycontext = context_coursecat::instance($categoryid);
 
-        if (!empty($course->id)) {
-            $coursecontext = context_course::instance($course->id);
-            $context = $coursecontext;
-        } else {
-            $coursecontext = null;
-            $context = $categorycontext;
-        }
+        $coursecontext = context_course::instance($cid);
 
-        $courseconfig = get_config('moodlecourse');
+		if (has_capability('block/eledia_coursewizard:create_course', $coursecontext) OR
+			has_capability('moodle/course:create', $categorycontext)) {
 
-        $this->course  = $course;
-        $this->context = $context;
+			$this->course = $course;
+			$this->context = $coursecontext;
 
-        $mform->addElement('header', 'general', get_string('general', 'form'));
+			$mform->addElement('header', 'general', get_string('general', 'form'));
 
-        $mform->addElement('hidden', 'returnto', null);
-        $mform->setType('returnto', PARAM_ALPHANUM);
-        $mform->setConstant('returnto', $returnto);
-        
-        $mform->addElement('hidden', 'cid', null);
-        $mform->setType('cid', PARAM_INT);
-        $mform->setConstant('cid', $cid);
+			$mform->addElement('hidden', 'returnto', null);
+			$mform->setType('returnto', PARAM_ALPHANUM);
+			$mform->setConstant('returnto', $returnto);
 
-        // Verify permissions to change course category or keep current.
-        if (empty($course->id)) {
-            if (has_capability('moodle/course:create', $categorycontext)) {
-                $displaylist = coursecat::make_categories_list('moodle/course:create');
+			$mform->addElement('hidden', 'cid', null);
+			$mform->setType('cid', PARAM_INT);
+			$mform->setConstant('cid', $cid);
+
+			// Verify permissions to change course category or keep current.
+            if (has_capability('block/eledia_coursewizard:change_category', $coursecontext)) {
+                $displaylist = coursecat::make_categories_list();
                 $mform->addElement('select', 'category', get_string('coursecategory'), $displaylist);
                 $mform->addHelpButton('category', 'coursecategory');
-                $mform->setDefault('category', $category->id);
+                $mform->setDefault('category', $categoryid);
             } else {
                 $mform->addElement('hidden', 'category', null);
                 $mform->setType('category', PARAM_INT);
-                $mform->setConstant('category', $category->id);
+                $mform->setConstant('category', $categoryid);
             }
-        } else {
-            if (has_capability('moodle/course:changecategory', $coursecontext)) {
-                $displaylist = coursecat::make_categories_list('moodle/course:create');
-                if (!isset($displaylist[$course->category])) {
-                    //always keep current
-                    $displaylist[$course->category] = coursecat::get($course->category, MUST_EXIST, true)->get_formatted_name();
-                }
-                $mform->addElement('select', 'category', get_string('coursecategory'), $displaylist);
-                $mform->addHelpButton('category', 'coursecategory');
-            } else {
-                //keep current
-                $mform->addElement('hidden', 'category', null);
-                $mform->setType('category', PARAM_INT);
-                $mform->setConstant('category', $course->category);
-            }
-        }
 
-        $mform->addElement('text', 'fullname', get_string('fullnamecourse'), 'maxlength="254" size="50"');
-        $mform->addHelpButton('fullname', 'fullnamecourse');
-        $mform->addRule('fullname', get_string('missingfullname'), 'required', null, 'client');
-        $mform->setType('fullname', PARAM_TEXT);
-        if (!empty($course->id) and !has_capability('moodle/course:changefullname', $coursecontext)) {
-            $mform->hardFreeze('fullname');
-            $mform->setConstant('fullname', $course->fullname);
-        }
+			$mform->addElement('text', 'fullname', get_string('fullnamecourse'), 'maxlength="254" size="50"');
+			$mform->addHelpButton('fullname', 'fullnamecourse');
+			$mform->addRule('fullname', get_string('missingfullname'), 'required', null, 'client');
+			$mform->setType('fullname', PARAM_TEXT);
 
-        $mform->addElement('text', 'shortname', get_string('shortnamecourse'), 'maxlength="100" size="20"');
-        $mform->addHelpButton('shortname', 'shortnamecourse');
-        $mform->addRule('shortname', get_string('missingshortname'), 'required', null, 'client');
-        $mform->setType('shortname', PARAM_TEXT);
-        if (!empty($course->id) and !has_capability('moodle/course:changeshortname', $coursecontext)) {
-            $mform->hardFreeze('shortname');
-            $mform->setConstant('shortname', $course->shortname);
-        }
+			$mform->addElement('text', 'shortname', get_string('shortnamecourse'), 'maxlength="100" size="20"');
+			$mform->addHelpButton('shortname', 'shortnamecourse');
+			$mform->addRule('shortname', get_string('missingshortname'), 'required', null, 'client');
+			$mform->setType('shortname', PARAM_TEXT);
 
-        $mform->addElement('editor', 'summary_editor', get_string('coursesummary'), null, $editoroptions);
-        $mform->addHelpButton('summary_editor', 'coursesummary');
-        $mform->setType('summary_editor', PARAM_RAW);
+			$mform->addElement('editor', 'summary_editor', get_string('coursesummary'), null, $editoroptions);
+			$mform->addHelpButton('summary_editor', 'coursesummary');
+			$mform->setType('summary_editor', PARAM_RAW);
 
-        if (!empty($course->id) and !has_capability('moodle/course:changesummary', $coursecontext)) {
-            $mform->hardFreeze('summary_editor');
-        }
+			$courseformats = get_sorted_course_formats(true);
+			$formcourseformats = array();
+			foreach ($courseformats as $courseformat) {
+				$formcourseformats[$courseformat] = get_string('pluginname', "format_$courseformat");
+			}
 
-        $courseformats = get_sorted_course_formats(true);
-        $formcourseformats = array();
-        foreach ($courseformats as $courseformat) {
-            $formcourseformats[$courseformat] = get_string('pluginname', "format_$courseformat");
-        }
-        if (isset($course->format)) {
-            $course->format = course_get_format($course)->get_format(); // Replace with default if not found.
-            if (!in_array($course->format, $courseformats)) {
-                // This format is disabled. Still display it in the dropdown.
-                $formcourseformats[$course->format] = get_string('withdisablednote', 'moodle',
+			if (isset($course->format)) {
+				$course->format = course_get_format($course)->get_format(); // Replace with default if not found.
+				if (!in_array($course->format, $courseformats)) {
+					// This format is disabled. Still display it in the dropdown.
+					$formcourseformats[$course->format] = get_string('withdisablednote', 'moodle',
                         get_string('pluginname', 'format_'.$course->format));
-            }
-        }
+				}
+			}
 
-        $this->add_action_buttons();
+			$this->add_action_buttons();
 
-        $mform->addElement('hidden', 'id', null);
-        $mform->setType('id', PARAM_INT);
+			$mform->addElement('hidden', 'id', null);
+			$mform->setType('id', PARAM_INT);
 
-        // Finally set the current form data.
-        $this->set_data($course);
-    }
+			// Finally set the current form data.
+			$this->set_data($course);
+
+		} else {
+			$mform->addElement('static', 'norights', '', get_string('norights', 'block_eledia_coursewizard'));
+			$mform->addElement('static', 'backbutton', '', '<br><a href='.$CFG->wwwroot.'/course/view.php?id='.$cid.'>'
+					.get_string('backbutton_cancel', 'block_eledia_coursewizard').'</a>');
+		}
+	}
 
     function definition_after_data() {
         global $DB;
@@ -155,7 +131,7 @@ class eledia_course_edit_form extends moodleform {
         // Add available groupings.
         if ($courseid = $mform->getElementValue('id') and $mform->elementExists('defaultgroupingid')) {
             $options = array();
-            if ($groupings = $DB->get_records('groupings', array('courseid'=>$courseid))) {
+            if ($groupings = $DB->get_records('groupings', array('courseid' => $courseid))) {
                 foreach ($groupings as $grouping) {
                     $options[$grouping->id] = format_string($grouping->name);
                 }
@@ -170,7 +146,7 @@ class eledia_course_edit_form extends moodleform {
         global $DB, $CFG;
 
         $errors = parent::validation($data, $files);
-        if ($foundcourses = $DB->get_records('course', array('shortname'=>$data['shortname']))) {
+        if ($foundcourses = $DB->get_records('course', array('shortname' => $data['shortname']))) {
             if (!empty($data['id'])) {
                 unset($foundcourses[$data['id']]);
             }
@@ -179,7 +155,7 @@ class eledia_course_edit_form extends moodleform {
                     $foundcoursenames[] = $foundcourse->fullname;
                 }
                 $foundcoursenamestring = implode(',', $foundcoursenames);
-                $errors['shortname']= get_string('shortnametaken', '', $foundcoursenamestring);
+                $errors['shortname'] = get_string('shortnametaken', '', $foundcoursenamestring);
             }
         }
         $errors = array_merge($errors, enrol_course_edit_validation($data, $this->context));

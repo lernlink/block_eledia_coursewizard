@@ -20,11 +20,12 @@
  * @package eledia_coursewizard
  */
 
-$string['addusers'] = 'Add users to course';
+$string['addusers'] = 'Add users to this course';
 $string['addusers_button'] = 'Add users';
-$string['addusers_desc'] = 'You can create users and automatically enrol them into your course.<br>
-                            They will get an e-mail with login data.';
-$string['addusers_head'] = 'Create and add users';
+$string['addusers_desc'] = 'You can enrol users to your course by adding their e-mail addresses here.<br>
+							For e-mail adresses which ar not known in your moodle system,
+							a new user will be created and automatically enroled into the course.<br>
+							New users will get an e-mail with login data.';
 $string['backbutton'] = 'Back to course';
 $string['backbutton_cancel'] = 'Cancel and back to course';
 $string['backbutton_create2'] = 'Skip user enrolment and go to new course';
@@ -39,13 +40,17 @@ $string['coursewizard_mailsubject_desc'] = 'Subject of e-mail to new user';
 $string['coursewizard_mailsubject_notnew'] = 'New course at Moodle';
 $string['coursewizard_mailsubject_notnew_desc'] = 'Subject of e-mail to existing user';
 $string['createcourse'] = 'Create a course';
-$string['createuser_button'] = 'Finish';
-$string['createuser_desc'] = 'You can create users and automatically enrol them into your new course.<br>
-                              They will get an e-mail with login data.';
-$string['createuser_head'] = 'Create user';
+$string['createuser_button'] = 'Add users and go to new course';
+$string['createuser_desc'] = 'You can enrol users to your new course by adding their e-mail addresses here.<br>
+							  For e-mail adresses which ar not known in your moodle system,
+							  a new user will be created and automatically enroled into the new course.<br>
+							  New users will get an e-mail with login data.';
 $string['eledia_coursewizard:addinstance'] = 'Add new eLeDia Course wizard block';
+$string['eledia_coursewizard:change_category'] = 'Change the category for new course created with the course wizard block';
 $string['eledia_coursewizard:create_course'] = 'Create a course with the course wizard block';
 $string['eledia_coursewizard:create_user'] = 'Create users with the course wizard block';
 $string['emailuser'] = 'E-mail addresses of new users:<br>(separated by comma)';
 $string['invalidemail'] = '{$a} is not a valid e-mail address.<br>';
+$string['norights'] = 'You have no rights to do this.';
+
 $string['pluginname'] = 'Course wizard';

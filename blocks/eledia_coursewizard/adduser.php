@@ -28,23 +28,22 @@ require_once(dirname(__FILE__) . '/adduser_form.php');
 error_reporting(E_ALL);
 
 $id  = optional_param('id', 0, PARAM_INT);  // Course id.
-$pageparams = array('id'=>$id);
+$pageparams = array('id' => $id);
 $PAGE->set_url('/blocks/eledia_coursewizard/adduser.php', $pageparams);
 
-global $CFG, $DB, $PAGE, $COURSE;
+global $CFG, $DB, $PAGE;
 
 require_login();
 $context = context_course::instance($id);
-require_capability('block/eledia_coursewizard:create_user', $context);
 $PAGE->set_context($context);
 $user = new StdClass();
 
-$editform = new coursewizard_enrol_users_form(null, array('user'=>$user));
+$editform = new coursewizard_add_users_form(null, array('user' => $user));
 
 if ($data = $editform->get_data()) {
     $cid = $data->id;
 
-    if($data->email != '') {
+    if ($data->email != '') {
 
         $mailparams = $DB->get_records_sql("SELECT name, value
                                             FROM {config_plugins}
@@ -62,14 +61,14 @@ if ($data = $editform->get_data()) {
 
             if (validate_email($username)) {
                 $contact = get_admin();
-                $uname = $DB->get_record('user', array('username'=>$username));
+                $uname = $DB->get_record('user', array('username' => $username));
 
                 if (empty($uname)) {  // New user => create, enrol and mail.
 
                     $passhash = md5($username.time());
                     $password = substr($passhash, 0, 12);
 
-// ---------------- Create new user.
+				 // Create new user.
                     $newuser = create_user_record($username, $password, 'email');
                     $newuser->email = $username;
                     $newuser->emailstop = 0;
@@ -82,7 +81,7 @@ if ($data = $editform->get_data()) {
 
                     enrol_try_internal_enrol($cid, $newuser->id, 5);  // Enrol into new course.
 
-// ---------------- E-Mail to new user.
+				 // E-Mail to new user.
                     $mailuser = new stdClass();  // Dummy user because email_to_user needs a user.
                     $mailuser->email = $username;
                     $mailuser->id = $newuser->id;
@@ -107,7 +106,8 @@ if ($data = $editform->get_data()) {
 
                     $content = $mailparams['mailcontent_notnew']->value."\n\n";
                     $content .= "Moodle-URL: ".$CFG->wwwroot."\n";
-                    email_to_user($uname, $contact, $mailparams['mailsubject_notnew']->value, strip_tags($content), $content);              
+                    email_to_user($uname, $contact, $mailparams['mailsubject_notnew']->value,
+								  strip_tags($content), $content);              
                 }
             } else {
                 $invalidemails[] = $username;
@@ -123,6 +123,22 @@ if ($data = $editform->get_data()) {
         redirect($url);
     }
 }
+
+$course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
+
+$straddnewuser = get_string('addusers_button', 'block_eledia_coursewizard');
+$stradministration = get_string("administration");
+$strcategories = get_string("categories");
+
+$PAGE->navbar->add($stradministration, new moodle_url('/admin/index.php'));
+$PAGE->navbar->add($strcategories, new moodle_url('/course/index.php'));
+$PAGE->navbar->add($course->shortname, $CFG->wwwroot.'/course/view.php?id='.$id);
+$PAGE->navbar->add($straddnewuser);
+
+$title = "$course->shortname: $straddnewuser";
+$fullname = $course->fullname;
+$PAGE->set_title($title);
+$PAGE->set_heading($fullname);
 
 echo $OUTPUT->header();
 $editform->display();

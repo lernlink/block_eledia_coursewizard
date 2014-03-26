@@ -27,26 +27,32 @@ class block_eledia_coursewizard extends block_base {
     }
 
     public function get_content() {
-        global $CFG, $DB, $COURSE;
+        global $CFG, $COURSE;
 
         $this->content = new stdClass;
         $this->content->footer = '';
         $this->content->text = '';
 
-        if (has_capability('block/eledia_coursewizard:create_course', $this->context) and has_capability('block/eledia_coursewizard:create_user', $this->context)) {
+		$categorycontext = context_coursecat::instance($COURSE->category);
+		$coursecontext = context_course::instance($COURSE->id);
+
+        if (has_capability('block/eledia_coursewizard:create_course', $coursecontext) OR
+			has_capability('moodle/course:create', $categorycontext)) {
 
             $this->content->text .= '<div class="eledia_coursewizard_createcourse">';
             $this->content->text .= "<a href=\"".$CFG->wwwroot."/blocks/eledia_coursewizard/createcourse.php?cid=".$COURSE->id."\">".get_string('createcourse', 'block_eledia_coursewizard')."</a>";
             $this->content->text .= '</div>';
         }
         
-        if (has_capability('block/eledia_coursewizard:create_user', $this->context)) {
+		$systemcontext = context_system::instance();
+
+        if (has_capability('block/eledia_coursewizard:create_user', $coursecontext) OR has_capability('moodle/user:create', $systemcontext)) {
 
             $this->content->text .= '<div class="eledia_coursewizard_adduser">';
             $this->content->text .= "<a href=\"".$CFG->wwwroot."/blocks/eledia_coursewizard/adduser.php?id=".$COURSE->id."\">".get_string('addusers', 'block_eledia_coursewizard')."</a>";
             $this->content->text .= '</div>';
         }
-        
+
         return $this->content;
     }
 

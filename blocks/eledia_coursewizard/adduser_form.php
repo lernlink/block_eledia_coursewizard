@@ -20,37 +20,51 @@
  * @package eledia_coursewizard
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 require_once($CFG->libdir.'/formslib.php');
 
-class coursewizard_enrol_users_form extends moodleform {
-    protected $course;
-    protected $context;
+class coursewizard_add_users_form extends moodleform {
+
     protected $user;
 
     function definition() {
 
-        global $USER, $CFG, $DB, $PAGE;
-        $cid = optional_param('id', 0, PARAM_INT);  // Course id.
+        global $CFG, $DB;
 
-        $mform =& $this->_form;
-        $user = $this->_customdata['user'];
-        $this->user = $user;
+		$cid = optional_param('id', 0, PARAM_INT);  // Course id.
+		$coursecontext = context_course::instance($cid);
+		$systemcontext = context_system::instance();
 
-        $mform->addElement('header', 'general', get_string('addusers_head', 'block_eledia_coursewizard'));
-        $mform->addElement('static', 'description', '', get_string('addusers_desc', 'block_eledia_coursewizard'));
-        $mform->addElement('textarea', 'email', get_string('emailuser', 'block_eledia_coursewizard'),
-                           'wrap="virtual", rows="10" cols="100"');
+		$mform =& $this->_form;
 
-        $mform->setType('email', PARAM_TEXT);
+		if (has_capability('block/eledia_coursewizard:create_user', $coursecontext) OR
+			has_capability('moodle/user:create', $systemcontext)) {
 
-        $mform->addElement('hidden', 'id', $cid);
-        $mform->setType('id', PARAM_INT);
+			$user = $this->_customdata['user'];
+			$this->user = $user;
 
-        $this->add_action_buttons(false, get_string('addusers_button', 'block_eledia_coursewizard'));
+			$mform->addElement('header', 'general', get_string('addusers', 'block_eledia_coursewizard'));
+			$mform->addElement('static', 'description', '', get_string('addusers_desc', 'block_eledia_coursewizard'));
+			$mform->addElement('textarea', 'email', get_string('emailuser', 'block_eledia_coursewizard'),
+							   'wrap="virtual", rows="10" cols="100"');
 
-        $mform->addElement('static', 'backbutton', '', '<br><a href='.$CFG->wwwroot.'/course/view.php?id='.$cid.'>'
-        .get_string('backbutton_cancel', 'block_eledia_coursewizard').'</a>');
+			$mform->setType('email', PARAM_TEXT);
 
-        $this->set_data($user);
+			$mform->addElement('hidden', 'id', $cid);
+			$mform->setType('id', PARAM_INT);
+
+			$this->add_action_buttons(false, get_string('addusers_button', 'block_eledia_coursewizard'));
+
+			$mform->addElement('static', 'backbutton', '', '<br><a href='.$CFG->wwwroot.'/course/view.php?id='.$cid.'>'
+			.get_string('backbutton_cancel', 'block_eledia_coursewizard').'</a>');
+
+			$this->set_data($user);
+
+		} else {
+			$mform->addElement('static', 'norights', '', get_string('norights', 'block_eledia_coursewizard'));
+			$mform->addElement('static', 'backbutton', '', '<br><a href='.$CFG->wwwroot.'/course/view.php?id='.$cid.'>'
+					.get_string('backbutton_cancel', 'block_eledia_coursewizard').'</a>');
+		}
     }
 }
