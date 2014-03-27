@@ -42,10 +42,8 @@ if (empty($id)) {
 $PAGE->set_url('/blocks/eledia_coursewizard/eledia_coursewizard.php', $pageparams);
 
 $course = null;
-$categoryid = 1;
 require_login();
-$category = $DB->get_record('course_categories', array('id' => $categoryid), '*', MUST_EXIST);
-$catcontext = context_coursecat::instance($category->id);
+$catcontext = context_coursecat::instance($categoryid);
 $PAGE->set_context($catcontext);
 
 // Prepare course and the editor.
@@ -56,7 +54,7 @@ $editoroptions['context'] = $catcontext;
 $course = file_prepare_standard_editor($course, 'summary', $editoroptions, null, 'course', 'summary', null);
 
 // First create the form.
-$editform = new eledia_course_edit_form(null, array('course'=>$course, 'category' => $category, 'editoroptions' => $editoroptions,
+$editform = new eledia_course_edit_form(null, array('course'=>$course, 'category' => $categoryid, 'editoroptions' => $editoroptions,
 													'returnto' => $returnto, 'cid' => $cid));
 if ($editform->is_cancelled()) {
 

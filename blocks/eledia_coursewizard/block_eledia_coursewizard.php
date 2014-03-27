@@ -40,7 +40,7 @@ class block_eledia_coursewizard extends block_base {
 			has_capability('moodle/course:create', $categorycontext)) {
 
             $this->content->text .= '<div class="eledia_coursewizard_createcourse">';
-            $this->content->text .= "<a href=\"".$CFG->wwwroot."/blocks/eledia_coursewizard/createcourse.php?cid=".$COURSE->id."\">".get_string('createcourse', 'block_eledia_coursewizard')."</a>";
+            $this->content->text .= "<a href=\"".$CFG->wwwroot."/blocks/eledia_coursewizard/createcourse.php?cid=".$COURSE->id."&category=".$COURSE->category."\">".get_string('createcourse', 'block_eledia_coursewizard')."</a>";
             $this->content->text .= '</div>';
         }
         
