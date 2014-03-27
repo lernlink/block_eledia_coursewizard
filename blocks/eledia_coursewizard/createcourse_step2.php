@@ -61,7 +61,7 @@ if ($data = $editform->get_data()) {
 
             if (validate_email($username)) {
                 $contact = get_admin();
-                $uname = $DB->get_record('user', array('username' => $username));
+                $uname = $DB->get_record('user', array('email' => $username));
 
                 if (empty($uname)) {  // New user => create, enrol and mail.
 
@@ -106,6 +106,7 @@ if ($data = $editform->get_data()) {
 
                     $content = $mailparams['mailcontent_notnew']->value."\n\n";
                     $content .= "Moodle-URL: ".$CFG->wwwroot."\n";
+                    $content .= "Moodle-Kurs: ".$CFG->wwwroot."/course/view.php?id=".$cid."\n";
                     email_to_user($uname, $contact, $mailparams['mailsubject_notnew']->value, strip_tags($content), $content);
                 }
             } else {

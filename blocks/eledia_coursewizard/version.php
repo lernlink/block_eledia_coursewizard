@@ -22,8 +22,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2014032600;                   // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2014032700;                   // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2013111800;                   // Requires this Moodle version. (2.6)
-$plugin->release   = '0.1 (2014032600)';
+$plugin->release   = '0.1 (2014032700)';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->component = 'block_eledia_coursewizard';  // Full name of the plugin (used for diagnostics).
