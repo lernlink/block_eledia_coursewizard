@@ -43,7 +43,13 @@ $PAGE->set_url('/blocks/eledia_coursewizard/eledia_coursewizard.php', $pageparam
 
 $course = null;
 require_login();
-$catcontext = context_coursecat::instance($categoryid);
+
+if ($categoryid != 0) {
+	$catcontext = context_coursecat::instance($categoryid);
+} else {
+	$catcontext = context_system::instance();
+}
+
 $PAGE->set_context($catcontext);
 
 // Prepare course and the editor.
