@@ -31,7 +31,7 @@ class eledia_course_edit_form extends moodleform {
     protected $context;
 
     function definition() {
-        global $CFG, $DB, $PAGE;
+        global $CFG, $DB, $PAGE, $COURSE;
 
         $mform = $this->_form;
         $PAGE->requires->yui_module('moodle-course-formatchooser', 'M.course.init_formatchooser',
@@ -46,8 +46,12 @@ class eledia_course_edit_form extends moodleform {
 			$categoryid = $course->category;
 		}
 
-        $systemcontext   = context_system::instance();
-        $categorycontext = context_coursecat::instance($categoryid);
+        $systemcontext = context_system::instance();
+		if ($COURSE->category != 0) {
+			$categorycontext = context_coursecat::instance($categoryid);
+		} else {
+			$categorycontext = $systemcontext;
+		}
 
         $coursecontext = context_course::instance($cid);
 

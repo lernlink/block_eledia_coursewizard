@@ -25,7 +25,7 @@ This block brings along three new rights:
     User can change the category for new course created with the course wizard block.
     Without this right the new course will be created in the category of the origin course.
 
-Users who already have the rights to create courses or users or to edit course categaries do not need
+Users who already have the rights to create courses or users or to edit course categories do not need
 the corresponding right for the course wizard block.
 
 
