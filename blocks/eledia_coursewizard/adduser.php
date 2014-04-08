@@ -31,12 +31,13 @@ $id  = optional_param('id', 0, PARAM_INT);  // Course id.
 $pageparams = array('id' => $id);
 $PAGE->set_url('/blocks/eledia_coursewizard/adduser.php', $pageparams);
 
-global $CFG, $DB, $PAGE;
+global $CFG, $DB, $PAGE, $USER;
 
 require_login();
 $context = context_course::instance($id);
 $PAGE->set_context($context);
 $user = new StdClass();
+$config = get_config('block_eledia_coursewizard');
 
 $editform = new coursewizard_add_users_form(null, array('user' => $user));
 
@@ -75,6 +76,18 @@ if ($data = $editform->get_data()) {
                     $newuser->maildisplay = 2;
                     $newuser->policyagreed = 0;
                  // $newuser->confirm = 1;
+                    $newuser->theme = $USER->theme;
+
+                    if (!empty($config->userfield)) {
+                        if (!empty($USER->profile[$config->userfield])) {
+                            $field = $DB->get_record('user_info_field', array('shortname' => $config->userfield));
+                            $user_data = new stdClass();
+                            $user_data->userid = $newuser->id;
+                            $user_data->fieldid = $field->id;
+                            $user_data->data = $USER->profile[$config->userfield];
+                            $DB->insert_record('user_info_data', $user_data);
+                        }
+                    }
 
                     $DB->update_record('user', $newuser);
                     set_user_preference('auth_forcepasswordchange', 1, $newuser->id);
@@ -108,7 +121,7 @@ if ($data = $editform->get_data()) {
                     $content .= "Moodle-URL: ".$CFG->wwwroot."\n";
                     $content .= "Moodle-Kurs: ".$CFG->wwwroot."/course/view.php?id=".$cid."\n";
                     email_to_user($uname, $contact, $mailparams['mailsubject_notnew']->value,
-								  strip_tags($content), $content);              
+								  strip_tags($content), $content);
                 }
             } else {
                 $invalidemails[] = $username;

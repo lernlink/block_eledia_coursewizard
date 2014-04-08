@@ -23,6 +23,8 @@
 defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
+    global $DB;
+
     $settings->add(new admin_setting_heading('block_eledia_coursewizard_settings', '',
                    get_string('coursewizard_desc', 'block_eledia_coursewizard')));
     $settings->add(new admin_setting_configtext('block_eledia_coursewizard/mailsubject',
@@ -38,4 +40,22 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_confightmleditor('block_eledia_coursewizard/mailcontent_notnew',
                    get_string('coursewizard_mailcontent_notnew_desc', 'block_eledia_coursewizard'), '',
                    get_string('coursewizard_mailcontent_notnew', 'block_eledia_coursewizard'), PARAM_RAW, 60, 10));
+
+    $columns = $DB->get_columns('user');
+    $showcolname = array();
+    $showcolname[0] = get_string('choose');
+
+    foreach($columns as $colname=>$col) {
+        if($col->meta_type == 'C') {
+            $showcolname[$col->name] = $col->name;
+        }
+    }
+    // Now we get the custom profile fields.
+    if($custom_profile_fields = $DB->get_records('user_info_field', null, 'shortname ASC')) {
+        foreach($custom_profile_fields as $cpf) {
+            $showcolname[$cpf->shortname] = $cpf->shortname;
+        }
+    }
+    $settings->add(new admin_setting_configselect('block_eledia_coursewizard/userfield', get_string('userfield', 'block_eledia_coursewizard'),
+                '', '0', $showcolname));
 }

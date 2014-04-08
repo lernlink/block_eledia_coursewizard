@@ -30,6 +30,7 @@ $string['backbutton'] = 'Back to course';
 $string['backbutton_cancel'] = 'Cancel and back to course';
 $string['backbutton_create2'] = 'Skip user enrolment and go to new course';
 $string['backbutton_form'] = 'Back to course wizard';
+
 $string['coursewizard_desc'] = 'Here you can edit the e-mail, which a new created user will get.';
 $string['coursewizard_mailcontent'] = 'Someone has created a new Moodle account for you.';
 $string['coursewizard_mailcontent_desc'] = 'Content of e-mail to new user';
@@ -45,12 +46,17 @@ $string['createuser_desc'] = 'You can enrol users to your new course by adding t
 							  For e-mail adresses which ar not known in your moodle system,
 							  a new user will be created and automatically enroled into the new course.<br>
 							  New users will get an e-mail with login data.';
+
 $string['eledia_coursewizard:addinstance'] = 'Add new eLeDia Course wizard block';
 $string['eledia_coursewizard:change_category'] = 'Change the category for new course created with the course wizard block';
 $string['eledia_coursewizard:create_course'] = 'Create a course with the course wizard block';
 $string['eledia_coursewizard:create_user'] = 'Create users with the course wizard block';
 $string['emailuser'] = 'E-mail addresses of new users:<br>(separated by comma)';
+
 $string['invalidemail'] = '{$a} is not a valid e-mail address.<br>';
+
 $string['norights'] = 'You have no rights to do this.';
 
 $string['pluginname'] = 'Course wizard';
+
+$string['userfield'] = 'Additional profile field to map to new users';
