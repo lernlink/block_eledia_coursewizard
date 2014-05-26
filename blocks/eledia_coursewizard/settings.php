@@ -58,4 +58,7 @@ if ($ADMIN->fulltree) {
     }
     $settings->add(new admin_setting_configselect('block_eledia_coursewizard/userfield', get_string('userfield', 'block_eledia_coursewizard'),
                 '', '0', $showcolname));
+
+    $settings->add(new admin_setting_configcheckbox('block_eledia_coursewizard/synctheme', get_string('synctheme', 'block_eledia_coursewizard'),
+                '', true));
 }

@@ -59,4 +59,5 @@ $string['norights'] = 'You have no rights to do this.';
 
 $string['pluginname'] = 'Course wizard';
 
+$string['synctheme'] = 'Syncronize theme from creator';
 $string['userfield'] = 'Additional profile field to map to new users';

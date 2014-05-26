@@ -76,7 +76,9 @@ if ($data = $editform->get_data()) {
                     $newuser->maildisplay = 2;
                     $newuser->policyagreed = 0;
                  // $newuser->confirm = 1;
-                    $newuser->theme = $USER->theme;
+                    if (!empty($config->synctheme)) {
+                        $newuser->theme = $USER->theme;
+                    }
 
                     if (!empty($config->userfield)) {
                         if (!empty($USER->profile[$config->userfield])) {
