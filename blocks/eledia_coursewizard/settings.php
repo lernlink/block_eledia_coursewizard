@@ -53,7 +53,7 @@ if ($ADMIN->fulltree) {
     // Now we get the custom profile fields.
     if($custom_profile_fields = $DB->get_records('user_info_field', null, 'shortname ASC')) {
         foreach($custom_profile_fields as $cpf) {
-            $showcolname[$cpf->shortname] = $cpf->shortname;
+            $showcolname['profile_field_'.$cpf->shortname] = $cpf->shortname;
         }
     }
     $settings->add(new admin_setting_configselect('block_eledia_coursewizard/userfield', get_string('userfield', 'block_eledia_coursewizard'),

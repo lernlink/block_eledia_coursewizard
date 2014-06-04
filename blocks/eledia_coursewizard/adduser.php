@@ -24,6 +24,7 @@ require_once('../../config.php');
 require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/blocks/eledia_coursewizard/createcourse_form.php');
 require_once(dirname(__FILE__) . '/adduser_form.php');
+require_once($CFG->dirroot.'/user/profile/lib.php');
 
 error_reporting(E_ALL);
 
@@ -79,16 +80,13 @@ if ($data = $editform->get_data()) {
                     if (!empty($config->synctheme)) {
                         $newuser->theme = $USER->theme;
                     }
-
                     if (!empty($config->userfield)) {
-                        if (!empty($USER->profile[$config->userfield])) {
-                            $field = $DB->get_record('user_info_field', array('shortname' => $config->userfield));
-                            $user_data = new stdClass();
-                            $user_data->userid = $newuser->id;
-                            $user_data->fieldid = $field->id;
-                            $user_data->data = $USER->profile[$config->userfield];
-                            $DB->insert_record('user_info_data', $user_data);
+                        profile_load_data($USER);
+                        profile_load_data($newuser);
+                        if (isset($USER->{$config->userfield})) {
+                            $newuser->{$config->userfield} = $USER->{$config->userfield};
                         }
+                        profile_save_data($newuser);
                     }
 
                     $DB->update_record('user', $newuser);
