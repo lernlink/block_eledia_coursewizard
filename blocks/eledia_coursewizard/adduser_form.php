@@ -15,9 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * @package block_eledia_coursewizard
  * @author Matthias Schwabe <support@eledia.de>
+ * @copyright 2013 & 2014 eLeDia GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package eledia_coursewizard
  */
 
 defined('MOODLE_INTERNAL') || die;
@@ -57,14 +58,14 @@ class coursewizard_add_users_form extends moodleform {
 			$this->add_action_buttons(false, get_string('addusers_button', 'block_eledia_coursewizard'));
 
 			$mform->addElement('static', 'backbutton', '', '<br><a href='.$CFG->wwwroot.'/course/view.php?id='.$cid.'>'
-			.get_string('backbutton_cancel', 'block_eledia_coursewizard').'</a>');
+                               .get_string('backbutton_cancel', 'block_eledia_coursewizard').'</a>');
 
 			$this->set_data($user);
 
 		} else {
 			$mform->addElement('static', 'norights', '', get_string('norights', 'block_eledia_coursewizard'));
 			$mform->addElement('static', 'backbutton', '', '<br><a href='.$CFG->wwwroot.'/course/view.php?id='.$cid.'>'
-					.get_string('backbutton_cancel', 'block_eledia_coursewizard').'</a>');
+                               .get_string('backbutton_cancel', 'block_eledia_coursewizard').'</a>');
 		}
     }
 }

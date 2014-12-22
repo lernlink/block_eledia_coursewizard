@@ -15,9 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * @package block_eledia_coursewizard
  * @author Matthias Schwabe <support@eledia.de>
+ * @copyright 2013 & 2014 eLeDia GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package eledia_coursewizard
  */
 
 $string['addusers'] = 'Add users to this course';
@@ -34,8 +35,10 @@ $string['backbutton_form'] = 'Back to course wizard';
 $string['coursewizard_desc'] = 'Here you can edit the e-mail, which a new created user will get.';
 $string['coursewizard_mailcontent'] = 'Someone has created a new Moodle account for you.';
 $string['coursewizard_mailcontent_desc'] = 'Content of e-mail to new user';
+$string['coursewizard_mailcontent_hint'] = 'Username and password of new user and the URL to your Moodle system will be added to this mail text.';
 $string['coursewizard_mailcontent_notnew'] = 'Someone has enrolled yout into a new Moodle course.';
 $string['coursewizard_mailcontent_notnew_desc'] = 'Content of e-mail to existing user';
+$string['coursewizard_mailcontent_notnew_hint'] = 'The URL to your Moodle system and the new course will be added to this mail text.';
 $string['coursewizard_mailsubject'] = 'Your new Moodle account';
 $string['coursewizard_mailsubject_desc'] = 'Subject of e-mail to new user';
 $string['coursewizard_mailsubject_notnew'] = 'New course at Moodle';
@@ -59,5 +62,7 @@ $string['norights'] = 'You have no rights to do this.';
 
 $string['pluginname'] = 'Course wizard';
 
-$string['synctheme'] = 'Syncronize theme from creator';
-$string['userfield'] = 'Additional profile field to map to new users';
+$string['syncfields'] = 'Profile fields to syncronize from creator';
+$string['syncfields_desc'] = 'Select the profile fields of new created users
+                              which will be automatically filled with the values from the creating user.
+                              You can select more than one option by pressing an holding down the control key while selecting.';

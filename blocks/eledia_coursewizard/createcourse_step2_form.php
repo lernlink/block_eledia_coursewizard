@@ -15,9 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * @package block_eledia_coursewizard
  * @author Matthias Schwabe <support@eledia.de>
+ * @copyright 2013 & 2014 eLeDia GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package eledia_coursewizard
  */
 
 defined('MOODLE_INTERNAL') || die;
@@ -49,7 +50,7 @@ class coursewizard_enrol_users_form extends moodleform {
 			$mform->addElement('header', 'general', get_string('addusers', 'block_eledia_coursewizard'));
 			$mform->addElement('static', 'description', '', get_string('createuser_desc', 'block_eledia_coursewizard'));
 			$mform->addElement('textarea', 'email', get_string('emailuser', 'block_eledia_coursewizard'),
-                           'wrap="virtual", rows="10" cols="100"');
+                               'wrap="virtual", rows="10" cols="100"');
 
 			$mform->setType('email', PARAM_TEXT);
 
@@ -63,7 +64,7 @@ class coursewizard_enrol_users_form extends moodleform {
 			$this->add_action_buttons(false, get_string('createuser_button', 'block_eledia_coursewizard'));
 
 			$mform->addElement('static', 'backbutton', '', '<br><a href='.$CFG->wwwroot.'/course/view.php?id='.$cid.'>'
-			.get_string('backbutton_create2', 'block_eledia_coursewizard').'</a>');
+                               .get_string('backbutton_create2', 'block_eledia_coursewizard').'</a>');
 
 			$this->set_data($user);
 

@@ -12,6 +12,8 @@ New users will get an e-mail with login data.
 
 You can even add users to an existing course.
 
+Since version 0.2 you can select user profile fields which will be automatically filled with the values from the creating user.
+
 For this block there is no need to have the moodle rights to create courses or users.
 This block brings along three new rights:
 
@@ -31,7 +33,7 @@ the corresponding right for the course wizard block.
 
 Requirements
 ------------
-Moodle 2.6
+Moodle 2.6, 2.7 or 2.8
 
 
 Installation
@@ -56,6 +58,9 @@ Site administration --> Plugins --> Blocks --> Course wizard.
 
 Version control
 ---------------
+- 0.2 (2014122200)
+-- added synchronization of user profile fields
+
 - 0.1 (2014032600)
 -- first release
 

@@ -15,18 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * @package block_eledia_coursewizard
  * @author Matthias Schwabe <support@eledia.de>
+ * @copyright 2013 & 2014 eLeDia GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package eledia_coursewizard
  */
 
 require_once('../../config.php');
+
+defined('MOODLE_INTERNAL') || die;
+
 require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/blocks/eledia_coursewizard/createcourse_form.php');
 require_once($CFG->libdir . '/blocklib.php');
-
-defined('MOODLE_INTERNAL') || die();
-error_reporting(E_ALL);
 
 $id         = optional_param('id', 0, PARAM_INT);  // Course id.
 $cid        = required_param('cid', PARAM_INT);  // Origin course id.
@@ -53,15 +54,16 @@ if ($categoryid != 0) {
 $PAGE->set_context($catcontext);
 
 // Prepare course and the editor.
-$editoroptions = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes' => $CFG->maxbytes, 'trusttext' => false, 'noclean' => true);
+$editoroptions = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes' => $CFG->maxbytes, 'trusttext' => false,
+                       'noclean' => true);
 
 // Editor should respect category context if course context is not set.
 $editoroptions['context'] = $catcontext;
 $course = file_prepare_standard_editor($course, 'summary', $editoroptions, null, 'course', 'summary', null);
 
 // First create the form.
-$editform = new eledia_course_edit_form(null, array('course'=>$course, 'category' => $categoryid, 'editoroptions' => $editoroptions,
-													'returnto' => $returnto, 'cid' => $cid));
+$editform = new eledia_course_edit_form(null, array('course'=>$course, 'category' => $categoryid,
+                                                    'editoroptions' => $editoroptions, 'returnto' => $returnto, 'cid' => $cid));
 if ($editform->is_cancelled()) {
 
     $url = new moodle_url($CFG->wwwroot.'/course/view.php', array('id' => $cid));
@@ -118,7 +120,7 @@ $PAGE->navbar->add($stradministration, new moodle_url('/admin/index.php'));
 $PAGE->navbar->add($strcategories, new moodle_url('/course/index.php'));
 $PAGE->navbar->add($straddnewcourse);
 
-$title = "$site->shortname: $straddnewcourse";
+$title = $site->shortname.': '.$straddnewcourse;
 $fullname = $site->fullname;
 $PAGE->set_title($title);
 $PAGE->set_heading($fullname);

@@ -15,15 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * @package block_eledia_coursewizard
  * @author Matthias Schwabe <support@eledia.de>
+ * @copyright 2013 & 2014 eLeDia GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package eledia_coursewizard
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2014060402;                   // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2013111800;                   // Requires this Moodle version. (2.6)
-$plugin->release   = '0.1 (2014033100)';
-$plugin->maturity  = MATURITY_STABLE;
+$plugin->version   = 2014122200;                   // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2014051200;                   // Requires this Moodle version. (2.7)
 $plugin->component = 'block_eledia_coursewizard';  // Full name of the plugin (used for diagnostics).
+$plugin->release   = '0.2 (2014122200)';
+$plugin->maturity  = MATURITY_STABLE;

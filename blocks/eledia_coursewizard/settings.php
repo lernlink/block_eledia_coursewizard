@@ -15,9 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * @package block_eledia_coursewizard
  * @author Matthias Schwabe <support@eledia.de>
+ * @copyright 2013 & 2014 eLeDia GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package eledia_coursewizard
  */
 
 defined('MOODLE_INTERNAL') || die;
@@ -31,34 +32,30 @@ if ($ADMIN->fulltree) {
                    get_string('coursewizard_mailsubject_desc', 'block_eledia_coursewizard'), '',
                    get_string('coursewizard_mailsubject', 'block_eledia_coursewizard'), PARAM_TEXT, 50));
     $settings->add(new admin_setting_confightmleditor('block_eledia_coursewizard/mailcontent',
-                   get_string('coursewizard_mailcontent_desc', 'block_eledia_coursewizard'), '',
+                   get_string('coursewizard_mailcontent_desc', 'block_eledia_coursewizard'),
+                   get_string('coursewizard_mailcontent_hint', 'block_eledia_coursewizard'),
                    get_string('coursewizard_mailcontent', 'block_eledia_coursewizard'), PARAM_RAW, 60, 10));
 
     $settings->add(new admin_setting_configtext('block_eledia_coursewizard/mailsubject_notnew',
                    get_string('coursewizard_mailsubject_notnew_desc', 'block_eledia_coursewizard'), '',
                    get_string('coursewizard_mailsubject_notnew', 'block_eledia_coursewizard'), PARAM_TEXT, 50));
     $settings->add(new admin_setting_confightmleditor('block_eledia_coursewizard/mailcontent_notnew',
-                   get_string('coursewizard_mailcontent_notnew_desc', 'block_eledia_coursewizard'), '',
+                   get_string('coursewizard_mailcontent_notnew_desc', 'block_eledia_coursewizard'),
+                   get_string('coursewizard_mailcontent_notnew_hint', 'block_eledia_coursewizard'),
                    get_string('coursewizard_mailcontent_notnew', 'block_eledia_coursewizard'), PARAM_RAW, 60, 10));
 
-    $columns = $DB->get_columns('user');
-    $showcolname = array();
-    $showcolname[0] = get_string('choose');
+    // Profile fields we allow to synchronize.
+    $columns = array('auth' => 'auth', 'institution' => 'institution', 'department' => 'department',
+                     'city' => 'city', 'country' => 'country', 'lang' => 'lang', 'theme' => 'theme', 'timezone' => 'timezone');
 
-    foreach($columns as $colname=>$col) {
-        if($col->meta_type == 'C') {
-            $showcolname[$col->name] = $col->name;
+    // Add the custom profile fields.
+    if ($customprofilefields = $DB->get_records('user_info_field', null, 'shortname ASC')) {
+        foreach ($customprofilefields as $field) {
+            $columns[$field->shortname] = $field->shortname;
         }
     }
-    // Now we get the custom profile fields.
-    if($custom_profile_fields = $DB->get_records('user_info_field', null, 'shortname ASC')) {
-        foreach($custom_profile_fields as $cpf) {
-            $showcolname['profile_field_'.$cpf->shortname] = $cpf->shortname;
-        }
-    }
-    $settings->add(new admin_setting_configselect('block_eledia_coursewizard/userfield', get_string('userfield', 'block_eledia_coursewizard'),
-                '', '0', $showcolname));
 
-    $settings->add(new admin_setting_configcheckbox('block_eledia_coursewizard/synctheme', get_string('synctheme', 'block_eledia_coursewizard'),
-                '', true));
+    $settings->add(new admin_setting_configmultiselect('block_eledia_coursewizard/syncfields',
+                   get_string('syncfields', 'block_eledia_coursewizard'),
+                   get_string('syncfields_desc', 'block_eledia_coursewizard'), null, $columns));
 }

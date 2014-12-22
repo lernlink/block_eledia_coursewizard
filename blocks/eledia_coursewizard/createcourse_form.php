@@ -15,9 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * @package block_eledia_coursewizard
  * @author Matthias Schwabe <support@eledia.de>
+ * @copyright 2013 & 2014 eLeDia GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package eledia_coursewizard
  */
 
 defined('MOODLE_INTERNAL') || die;
@@ -35,13 +36,14 @@ class eledia_course_edit_form extends moodleform {
 
         $mform = $this->_form;
         $PAGE->requires->yui_module('moodle-course-formatchooser', 'M.course.init_formatchooser',
-               array(array('formid' => $mform->getAttribute('id'))));
+                                    array(array('formid' => $mform->getAttribute('id'))));
 
         $editoroptions = $this->_customdata['editoroptions'];
         $returnto      = $this->_customdata['returnto'];
         $cid           = $this->_customdata['cid'];
 
 		$course = $DB->get_record('course', array('id' => $cid), 'id, category');
+
 		if ($course) { // Should always exist, but just in case.
 			$categoryid = $course->category;
 		}
@@ -73,11 +75,14 @@ class eledia_course_edit_form extends moodleform {
 
 			// Verify permissions to change course category or keep current.
             if (has_capability('block/eledia_coursewizard:change_category', $coursecontext)) {
+
                 $displaylist = coursecat::make_categories_list();
                 $mform->addElement('select', 'category', get_string('coursecategory'), $displaylist);
                 $mform->addHelpButton('category', 'coursecategory');
                 $mform->setDefault('category', $categoryid);
+
             } else {
+
                 $mform->addElement('hidden', 'category', null);
                 $mform->setType('category', PARAM_INT);
                 $mform->setConstant('category', $categoryid);
@@ -99,6 +104,7 @@ class eledia_course_edit_form extends moodleform {
 
 			$courseformats = get_sorted_course_formats(true);
 			$formcourseformats = array();
+
 			foreach ($courseformats as $courseformat) {
 				$formcourseformats[$courseformat] = get_string('pluginname', "format_$courseformat");
 			}
@@ -108,7 +114,7 @@ class eledia_course_edit_form extends moodleform {
 				if (!in_array($course->format, $courseformats)) {
 					// This format is disabled. Still display it in the dropdown.
 					$formcourseformats[$course->format] = get_string('withdisablednote', 'moodle',
-                        get_string('pluginname', 'format_'.$course->format));
+                                                          get_string('pluginname', 'format_'.$course->format));
 				}
 			}
 
@@ -121,9 +127,10 @@ class eledia_course_edit_form extends moodleform {
 			$this->set_data($course);
 
 		} else {
+
 			$mform->addElement('static', 'norights', '', get_string('norights', 'block_eledia_coursewizard'));
 			$mform->addElement('static', 'backbutton', '', '<br><a href='.$CFG->wwwroot.'/course/view.php?id='.$cid.'>'
-					.get_string('backbutton_cancel', 'block_eledia_coursewizard').'</a>');
+                               .get_string('backbutton_cancel', 'block_eledia_coursewizard').'</a>');
 		}
 	}
 

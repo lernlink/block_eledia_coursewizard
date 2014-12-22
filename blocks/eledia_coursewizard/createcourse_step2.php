@@ -15,26 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * @package block_eledia_coursewizard
  * @author Matthias Schwabe <support@eledia.de>
+ * @copyright 2013 & 2014 eLeDia GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package eledia_coursewizard
  */
 
 require_once('../../config.php');
+
+defined('MOODLE_INTERNAL') || die;
+
 require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/blocks/eledia_coursewizard/createcourse_form.php');
 require_once(dirname(__FILE__) . '/createcourse_step2_form.php');
-
-error_reporting(E_ALL);
 
 $id  = optional_param('id', 0, PARAM_INT);  // Course id.
 $cid = required_param('cid', PARAM_INT);  // Origin course id.
 $pageparams = array('id' => $id);
 $PAGE->set_url('/blocks/eledia_coursewizard/createcourse2.php', $pageparams);
 
-global $CFG, $DB, $PAGE;
-
 require_login();
+
 $context = context_course::instance($cid);
 $PAGE->set_context($context);
 $user = new StdClass();
@@ -45,9 +46,7 @@ if ($data = $editform->get_data()) {
 
     if ($data->email != '') {
 
-        $mailparams = $DB->get_records_sql("SELECT name, value
-                                            FROM {config_plugins}
-                                            WHERE plugin='block_eledia_coursewizard'");
+        $config = get_config('block_eledia_coursewizard');
 
         $usernames = $data->email;
         $usernames = str_replace("\n", " ", $usernames);
@@ -63,9 +62,10 @@ if ($data = $editform->get_data()) {
                 $contact = get_admin();
                 $uname = $DB->get_record('user', array('email' => $username));
 
-                if (empty($uname)) {  // New user => create, enrol and mail.
+                // New user => create, enrol and mail.
+                if (empty($uname)) {
 
-                    $passhash = md5($username.time());
+                    $passhash = md5($username.rand(1, 1000));
                     $password = substr($passhash, 0, 12);
 
 				 // Create new user.
@@ -74,7 +74,25 @@ if ($data = $editform->get_data()) {
                     $newuser->emailstop = 0;
                     $newuser->maildisplay = 2;
                     $newuser->policyagreed = 0;
-                 // $newuser->confirm = 1;
+
+                    if (!empty($config->syncfields)) {
+
+                        profile_load_data($USER);
+                        profile_load_data($newuser);
+
+                        $userfields = explode(',', $config->syncfields);
+
+                        foreach ($userfields as $field) {
+                            if (isset($USER->{$field})) {
+                                $newuser->{$field} = $USER->{$field};
+                            }
+                            $profilefield = 'profile_field_'.$field;
+                            if (isset($USER->$profilefield )) {
+                                $newuser->$profilefield = $USER->$profilefield ;
+                            }
+                        }
+                        profile_save_data($newuser);
+                    }
 
                     $DB->update_record('user', $newuser);
                     set_user_preference('auth_forcepasswordchange', 1, $newuser->id);
@@ -93,21 +111,21 @@ if ($data = $editform->get_data()) {
                     $mailuser->middlename = ' ';
                     $mailuser->alternatename = ' ';
 
-                    $content = $mailparams['mailcontent']->value."\n\n";
-                    $content .= "Moodle-URL: ".$CFG->wwwroot."\n";
-                    $content .= "Your username: ".$username."\n";
-                    $content .= "Your password: ".$password;
+                    $content = $config->mailcontent."\n\n";
+                    $content .= "Moodle URL: ".$CFG->wwwroot."\n";
+                    $content .= "Username: ".$username."\n";
+                    $content .= "Password: ".$password;
 
-                    email_to_user($mailuser, $contact, $mailparams['mailsubject']->value, strip_tags($content), $content);
+                    email_to_user($mailuser, $contact, $config->mailsubject, strip_tags($content), $content);
 
                 } else {  // Existing user => enrol and mail.
 
                     enrol_try_internal_enrol($cid, $uname->id, 5);  // Enrol into new course.
 
-                    $content = $mailparams['mailcontent_notnew']->value."\n\n";
-                    $content .= "Moodle-URL: ".$CFG->wwwroot."\n";
-                    $content .= "Moodle-Kurs: ".$CFG->wwwroot."/course/view.php?id=".$cid."\n";
-                    email_to_user($uname, $contact, $mailparams['mailsubject_notnew']->value, strip_tags($content), $content);
+                    $content = $config->mailcontent_notnew."\n\n";
+                    $content .= "Moodle URL: ".$CFG->wwwroot."\n";
+                    $content .= "Moodle course: ".$CFG->wwwroot."/course/view.php?id=".$cid."\n";
+                    email_to_user($uname, $contact, $config->mailsubject_notnew, strip_tags($content), $content);
                 }
             } else {
                 $invalidemails[] = $username;
@@ -135,7 +153,7 @@ $PAGE->navbar->add($strcategories, new moodle_url('/course/index.php'));
 $PAGE->navbar->add($course->shortname, $CFG->wwwroot.'/course/view.php?id='.$id);
 $PAGE->navbar->add($straddnewuser);
 
-$title = "$course->shortname: $straddnewuser";
+$title = $course->shortname.': '.$straddnewuser;
 $fullname = $course->fullname;
 $PAGE->set_title($title);
 $PAGE->set_heading($fullname);
